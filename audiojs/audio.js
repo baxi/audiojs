@@ -70,6 +70,9 @@
           <div class="time"> \
             <em class="played">00:00</em>/<strong class="duration">00:00</strong> \
           </div> \
+          <div class="volume"> \
+            <div class="level"></div> \
+          </div> \
           <div class="error-message"></div>',
         playPauseClass: 'play-pause',
         scrubberClass: 'scrubber',
@@ -78,6 +81,8 @@
         timeClass: 'time',
         durationClass: 'duration',
         playedClass: 'played',
+	volumeClass: 'volume',
+	levelClass: 'level',
         errorMessageClass: 'error-message',
         playingClass: 'playing',
         loadingClass: 'loading',
@@ -101,6 +106,10 @@
         .audiojs .loaded { position: absolute; top: 0px; left: 0px; height: 14px; width: 0px; background: #000; \
           background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #222), color-stop(0.5, #333), color-stop(0.51, #222), color-stop(1, #222)); \
           background-image: -moz-linear-gradient(center top, #222 0%, #333 50%, #222 51%, #222 100%); } \
+        .audiojs .volume { position: relative; float: left; width: 100px; background: #5a5a5a; height: 14px; margin: 10px; border-top: 1px solid #3f3f3f; border-left: 0px; border-bottom: 0px; overflow: hidden; } \
+        .audiojs .level { position: absolute; top: 0px; left: 0px; height: 14px; width: 0px; background: #ccc; z-index: 1; \
+          background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #ccc), color-stop(0.5, #ddd), color-stop(0.51, #ccc), color-stop(1, #ccc)); \
+          background-image: -moz-linear-gradient(center top, #ccc 0%, #ddd 50%, #ccc 51%, #ccc 100%); } \
         .audiojs .time { float: left; height: 36px; line-height: 36px; margin: 0px 0px 0px 6px; padding: 0px 6px 0px 12px; border-left: 1px solid #000; color: #ddd; text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.5); } \
         .audiojs .time em { padding: 0px 2px 0px 0px; color: #f9f9f9; font-style: normal; } \
         .audiojs .time strong { padding: 0px 0px 0px 2px; font-weight: normal; } \
@@ -285,6 +294,7 @@
       var player = audio.settings.createPlayer,
           playPause = getByClass(player.playPauseClass, wrapper),
           scrubber = getByClass(player.scrubberClass, wrapper),
+          volume = getByClass(player.volumeClass, wrapper),
           leftPos = function(elem) {
             var curleft = 0;
             if (elem.offsetParent) {
@@ -300,6 +310,13 @@
       container[audiojs].events.addListener(scrubber, 'click', function(e) {
         var relativeLeft = e.clientX - leftPos(this);
         audio.skipTo(relativeLeft / scrubber.offsetWidth);
+      });
+
+      container[audiojs].events.addListener(volume, 'click', function(e) {
+        var relativeLeft = e.clientX - leftPos(this);
+	level = getByClass(player.levelClass, wrapper),
+        level.style.width = (relativeLeft ) + 'px';
+        audio.setVolume(relativeLeft / volume.offsetWidth);
       });
 
       // _If flash is being used, then the following handlers don't need to be registered._
